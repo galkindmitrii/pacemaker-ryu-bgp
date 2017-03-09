@@ -1,13 +1,15 @@
 #!/bin/sh
 #
 # 	License:	GNU General Public License (GPL) 
-#	Author: 	Christian Eichelmann <ceichelmann@gmx.de>
+#	Author: 	Dmitry Galkin <galkindmitrii@gmail.com>
+#	Fork from: 	Christian Eichelmann <ceichelmann@gmx.de>
 #
 #	Virtual IP Address by BGP protocol.
-#	This script manages IP alias in different subnet with quagga/bgpd.
+#	This script manages IP alias in different subnet with ryu BGP speaker.
 #	It can add an IP alias, or remove one.
 #	
-#	The quagga package should be installed to run this RA
+#	The ryu should be installed and BGP speaker should be started with
+#       RPC active and listening on the default port (50002).
 #
 #	usage: $0 {start|stop|status|monitor|validate-all|meta-data}
 #
@@ -37,7 +39,7 @@ cat <<END
 
 <longdesc lang="en">
 Virtual IP Address by BGP protocol.
-This script manages IP alias in different subnet with quagga/bgpd.
+This script manages IP alias in different subnet with ryu BGP speaker.
 It can add an IP alias, or remove one.
 </longdesc>
 <shortdesc lang="en">Manages a virtual IP address through BGP</shortdesc>
