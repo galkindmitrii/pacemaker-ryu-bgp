@@ -1,24 +1,31 @@
 #!/bin/sh
 #
-# 	License:	GNU General Public License (GPL) 
+# 	License:	GNU General Public License (GPL)
 #	Author: 	Dmitry Galkin <galkindmitrii@gmail.com>
 #	Fork from: 	Christian Eichelmann <ceichelmann@gmx.de>
 #
 #	Virtual IP Address by BGP protocol.
+#
 #	This script manages IP alias in different subnet with ryu BGP speaker.
 #	It can add an IP alias, or remove one.
-#	
+#
 #	The ryu should be installed and BGP speaker should be started with
 #       RPC active and listening on the default port (50002).
+#
+#       For example like this:
+#
+#       ryu-manager --app-lists
+#       /usr/lib/python2.7/site-packages/ryu/services/protocols/bgp/application.py,
+#       /usr/lib/python2.7/site-packages/ryu/services/protocols/bgp/core_manager.py
+#       --bgp-app-config-file pacemaker-ryu-bgp/bgp-sample-conf.py
 #
 #	usage: $0 {start|stop|status|monitor|validate-all|meta-data}
 #
 #	The "start" arg adds an IP alias.
-#	Surprisingly, the "stop" arg removes one. :-)
+#	Surprisingly, the "stop" arg removes one.
 #
 #       OCF parameters are as below
-#       OCF_RESKEY_ip	The IP address in different subnet
-#       OCF_RESKEY_nic	The nic for broadcast the route information
+#       OCF_RESKEY_ip	The IP address/prefix to be advertised.
 #
 #######################################################################
 # Initialization:
