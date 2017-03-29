@@ -11,7 +11,6 @@
 #
 #	The ryu should be installed and BGP speaker should be started with
 #       RPC active and listening on the default port (50002).
-#
 #       For example like this:
 #
 #       ryu-manager --app-lists
@@ -22,10 +21,11 @@
 #	usage: $0 {start|stop|status|monitor|validate-all|meta-data}
 #
 #	The "start" arg adds an IP alias.
-#	Surprisingly, the "stop" arg removes one.
+#	Surprisingly, the "stop" arg removes one. :-)
 #
 #       OCF parameters are as below
-#       OCF_RESKEY_ip	The IP address/prefix to be advertised.
+#       OCF_RESKEY_ip	The IP address in different subnet
+#       OCF_RESKEY_nic	The nic for broadcast the route information
 #
 #######################################################################
 # Initialization:
@@ -81,34 +81,28 @@ usage() {
 
 start_ip() {
     stdout=$(ryu rpc-cli --peers=bgp=127.0.0.1:50002 -c 'request bgp network.add [{"prefix": "'$OCF_RESKEY_ip'"}]')
-    if [ $stdout -ne "RESULT True" ]; then
-        return $OCF_ERR_ARGS
+    if [ "$stdout" = "RESULT True" ]; then
+        exit $OCF_SUCCESS
     fi
-    return $OCF_SUCCESS
+    exit $OCF_ERR_GENERIC
 }
 
 stop_ip() {
-    status_ip
-    if [ $? -eq $OCF_SUCCESS ]; then
-        stdout=$(ryu rpc-cli --peers=bgp=127.0.0.1:50002 -c 'request bgp network.del [{"prefix": "'$OCF_RESKEY_ip'"}]')
-        if [ $stdout -ne "RESULT True" ]; then
-            return $OCF_ERR_ARGS
-        else
-            return $OCF_SUCCESS
-        fi
-    else
-        return $OCF_SUCCESS
+    stdout=$(ryu rpc-cli --peers=bgp=127.0.0.1:50002 -c 'request bgp network.del [{"prefix": "'$OCF_RESKEY_ip'"}]')
+    if [ "$stdout" = "RESULT True" ]; then
+        exit $OCF_SUCCESS
     fi
+    exit $OCF_ERR_GENERIC
 }
 
 status_ip() {
     for announced_ip in `ryu rpc-cli --peers=bgp=127.0.0.1:50002 -c 'request bgp operator.show [{"params": ["rib", "ipv4"], "format": "cli" }]' | grep '^ \*>' | awk '{print $2}'`
     do
         if [ "$announced_ip" = "$OCF_RESKEY_ip" ]; then
-            return $OCF_SUCCESS
+            exit $OCF_SUCCESS
         fi
     done
-	return $OCF_NOT_RUNNING
+	exit $OCF_NOT_RUNNING
 }
 
 if
